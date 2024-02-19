@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
 import { UserService } from 'src/user/user.service';
 import { compare } from 'bcrypt';
+import { StatusEnum } from 'src/user/enum/status.enum';
 
 @Injectable()
 export class AuthService {
@@ -25,6 +26,8 @@ export class AuthService {
     const confirmedPassword = await compare(password, user.password);
 
     if (!confirmedPassword) return null;
+
+    if (user.status === StatusEnum.INACTIVE) return null;
 
     return user;
   }

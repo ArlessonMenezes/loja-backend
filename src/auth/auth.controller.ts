@@ -6,13 +6,13 @@ import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
     constructor(
         private readonly authService: AuthService,
     ){}
 
-    @ApiTags('Auth')
     @UseGuards(LocalAuthGuard)
     @ApiOperation({ summary: 'Login' })
     @Post('/login')

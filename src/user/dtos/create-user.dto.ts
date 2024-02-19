@@ -9,13 +9,13 @@ export class CreateUserDto {
   email: string;
 
   @ApiProperty()
+  phone: string;
+
+  @ApiProperty()
   password: string;
 
   @ApiProperty()
   confirmedPassword: string;
-
-  @ApiProperty()
-  phone: string;
 
   @ApiProperty()
   address: AddressDto;
