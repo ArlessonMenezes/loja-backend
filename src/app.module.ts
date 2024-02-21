@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import * as cors from 'cors';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { APP_GUARD } from '@nestjs/core';
       autoLoadEntities: true,
       synchronize: true,
     } as TypeOrmModuleAsyncOptions),
-    AuthModule
+    AuthModule,
+    ProductModule
   ],
   controllers: [],
   providers:  [],
