@@ -23,6 +23,9 @@ export class User {
   @Column()
   address: string;
 
+  @Column()
+  typeUser: string;
+
   @CreateDateColumn({ name: 'created_at' , type: 'datetime' })
   createdAt: Date;
 

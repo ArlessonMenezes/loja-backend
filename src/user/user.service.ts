@@ -7,6 +7,7 @@ import { StatusEnum } from './enum/status.enum';
 import { compare, hash } from 'bcrypt';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UpdatePassword } from './dtos/update-password.dto';
+import { UserTypeEnum } from './enum/user-type.enum';
 
 @Injectable()
 export class UserService {
@@ -15,14 +16,14 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ){}
 
-  async createUser(data: CreateUserDto) {
+  async createUser(data: CreateUserDto, isAdmin?: boolean) {
     const user = await this.verifyUserExists(data.email);
 
     if (user) throw new BadRequestException('user already exists.');
     
     if (data.password !== data.confirmedPassword) {
       throw new BadRequestException("password don't match");
-    };
+    };  
 
     const salt = 10;
     const hashedPassword = await hash(data.password, salt);
@@ -33,13 +34,18 @@ export class UserService {
       status: StatusEnum.ACITVE,
       password: hashedPassword,
       address: JSON.stringify(data.address),
+      phone: data.phone,
+      typeUser: isAdmin === true ? UserTypeEnum.Admin : UserTypeEnum.User,  
     });
 
     await this.userRepository.save(newUser);
 
-    const { password, createdAt, updatedAt, ...createdUser } = newUser;
+    const { password, createdAt, updatedAt, address, ...createdUser } = newUser;
 
-    return createdUser;
+    return {
+      createdUser,
+      address: JSON.parse(address),
+    };
   }
 
   async verifyUserExists(email: string) {
@@ -55,21 +61,14 @@ export class UserService {
   };
 
   async getUsers() {
-    const users = await this.userRepository.find({
-      select: [
-        'idUser',
-        'name',
-        'email',
-        'status',
-        'address',
-      ],
-    });
+    const users = await this.userRepository.find();
 
-    const listUserrs = users.map(user => ({
+    const listUserrs: Partial<User>[] = users.map(user => ({
       idUSer: user.idUser,
       name: user.name,
       email: user.email,
       status: user.status,
+      typeUser: user.typeUser,
       addres: JSON.parse(user.address),
     }));
 
@@ -114,6 +113,7 @@ export class UserService {
       name: user.name,
       email: user.email,
       phone: user.phone,
+      typeUser: user.typeUser,
       address: JSON.parse(user.address),
     };
 

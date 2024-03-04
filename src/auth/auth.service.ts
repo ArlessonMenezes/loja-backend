@@ -2,8 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
 import { UserService } from 'src/user/user.service';
-import { compare } from 'bcrypt';
+import { compare, compareSync } from 'bcrypt';
 import { StatusEnum } from 'src/user/enum/status.enum';
+import { LoginPayloadDto } from './dto/login-payload.dto';
+import { User } from 'src/user/model/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -13,9 +15,19 @@ export class AuthService {
   ) {}    
 
   async login(loginDto: LoginDto) {
-    const payload = { sub: loginDto.id, email: loginDto.email };
+    const user = await this.userService.verifyUserExists(loginDto.email);
 
-    return { token: this.jwtService.sign(payload) };
+    const returnUser: Partial<User> = {
+      idUser: user.idUser,
+      name: user.name,
+      email: user.email,
+      typeUser: user.typeUser,
+    };
+
+    return {
+      token: this.jwtService.sign({...new LoginPayloadDto(user)}),
+      user: returnUser,
+    };
   }
 
   async validateUser(email: string, password: string) {

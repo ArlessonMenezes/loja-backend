@@ -1,10 +1,12 @@
-import { Body, Controller, Get, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UpdatePassword } from './dtos/update-password.dto';
+import { Roles } from 'src/decorators/roles.decorator';
+import { UserTypeEnum } from './enum/user-type.enum';
 
 @ApiTags('User')
 @Controller('users')
@@ -14,13 +16,18 @@ export class UserController {
   ){}
 
   @ApiOperation({ summary: 'create user' })
+  @ApiQuery({ name: 'isAdmin', required: false })
   @Post()
-  async createuser(@Body() data: CreateUserDto) {
-    return this.userService.createUser(data);
+  async createuser(
+    @Body() data: CreateUserDto,
+    @Query('isAdmin') isAdmin?: boolean,  
+  ) {
+    return this.userService.createUser(data, isAdmin);
   };
 
-  @ApiTags('User')
+
   @UseGuards(JwtAuthGuard)
+  @Roles(UserTypeEnum.Admin)
   @ApiOperation({ summary: 'List users' })
   @ApiBearerAuth()
   @Get()
@@ -28,7 +35,6 @@ export class UserController {
     return this.userService.getUsers();
   };
 
-  @ApiTags('User')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Update user' })
   @ApiParam({ name: 'idUser' })
@@ -41,7 +47,6 @@ export class UserController {
     return this.userService.updateUser(idUser, updateUser);
   };
 
-  @ApiTags('User')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Update password' })
   @ApiParam({ name: 'idUser' })

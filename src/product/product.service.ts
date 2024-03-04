@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Product } from './model/product.entity';
 import { CreateProductDto } from './dtos/create-product.dto';
@@ -28,5 +28,15 @@ export class ProductService {
 
   async getProducts() {
     return this.productRepository.find();
+  }; 
+
+  async getProductById(idProduct: string) {
+    const product = await this.productRepository.findOneBy({ idProduct });
+
+    if (!product) {
+      throw new NotFoundException('product not found.');
+    };
+
+    return product;
   };
 }

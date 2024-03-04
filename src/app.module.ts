@@ -7,6 +7,8 @@ import * as cors from 'cors';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { ProductModule } from './product/product.module';
+import { RolesGuard } from './auth/guards/roles.guard';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -22,10 +24,16 @@ import { ProductModule } from './product/product.module';
       synchronize: true,
     } as TypeOrmModuleAsyncOptions),
     AuthModule,
-    ProductModule
+    ProductModule,
+    JwtModule,
   ],
   controllers: [],
-  providers:  [],
+  providers:  [
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {

@@ -4,7 +4,11 @@ import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 export class LoginDto { 
     @IsString()
     @IsOptional()
-    id?: string;
+    idUser?: string;
+
+    @IsString()
+    @IsOptional()
+    typeUser?: string;
 
     @IsString()
     @IsNotEmpty()
