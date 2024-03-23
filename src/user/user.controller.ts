@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { CreateUserDto } from './dtos/create-user.dto';
@@ -57,5 +57,15 @@ export class UserController {
     @Body() updatePassword: UpdatePassword,
   ) {
     return this.userService.updatePassword(idUser, updatePassword);
+  };
+
+  @Roles(UserTypeEnum.Admin)
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Banned a user' })
+  @ApiParam({ name: 'idUser' })
+  @ApiBearerAuth()
+  @Delete('/banned-user/:idUser')
+  async bannedUser(@Param('idUser') idUser: string) {
+    return this.userService.bannedUser(idUser);
   };
 }

@@ -1,9 +1,11 @@
 import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ProductService } from './product.service';
-import { CreateProductDto } from './dtos/create-product.dto';
 import { ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CategoryProductEnum } from './enums/category-product.enum';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { CreateProductDto } from './dto/create-product.dto';
+import { Roles } from 'src/decorators/roles.decorator';
+import { UserTypeEnum } from 'src/user/enum/user-type.enum';
 
 @ApiTags('Product')
 @Controller('product')
@@ -12,7 +14,8 @@ export class ProductController {
     private readonly productService: ProductService,
   ) {}
 
-  // @UseGuards(JwtAuthGuard)
+  @Roles(UserTypeEnum.Admin)
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Create a product' })
   @Post()
   async createProduct(

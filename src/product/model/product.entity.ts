@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { ItemOrder } from "src/order/model/item-order.entity";
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('products')
 export class Product {
@@ -22,6 +23,9 @@ export class Product {
 
   @Column()
   urlImage: string;
+
+  @OneToMany(() => ItemOrder, ItemProduct => ItemProduct.Product)
+  itemsProducts: ItemOrder[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

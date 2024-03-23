@@ -119,4 +119,18 @@ export class UserService {
 
     return viewUser;
   }
+
+  async bannedUser(idUser: string) {
+    const user = await this.findUserById(idUser);
+  
+    if (user.status === StatusEnum.INACTIVE) {
+      throw new BadRequestException('user is already inactive.');
+    };
+
+    await this.userRepository.update(user.idUser, {
+      status: StatusEnum.INACTIVE,
+    });
+
+    return { message: `user ${user.name} was banned with success` };
+  }
 }
